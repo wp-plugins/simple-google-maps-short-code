@@ -1,6 +1,6 @@
 === Simple Google Maps Short Code ===
 Author URI: http://pippinsplugins.com
-Plugin URI: http://pippinsplugins.com/simple-google-map-short-codes
+Plugin URI: http://pippinsplugins.com/simple-google-maps-short-code
 Contributors: mordauk
 Donate link: http://pippinsplugins.com/support-the-site
 Tags: Google Maps, Google Map, Short Code, gmaps, Pippin Williamson, Pippin's Plugins 
