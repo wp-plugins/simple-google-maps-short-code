@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: Simple Google Maps Short Code
-Plugin URL: http://pippinsplugins.com/simple-google-map-short-codes
+Plugin URL: http://pippinsplugins.com/simple-google-maps-short-code
 Description: Adds a simple Google Maps short code
 Version: 1.0
 Author: Pippin Williamson
