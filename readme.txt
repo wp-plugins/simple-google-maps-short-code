@@ -27,7 +27,7 @@ Yes, simply supply a width and height parameter:
 
 `[pw_map address="New York City" width="400px" height="200px"]`
 
-You can also use percentages for heights:
+You can also use percentages for sizes:
 
 `[pw_map address="New York City" width="50%" height="200px"]`
 
@@ -44,7 +44,7 @@ The maps are cached for 3 months. Caches are automatically cleared (for individu
 == Installation ==
 
 1. Activate the plugin
-2. Added [pw_map address="your address here"] to any post or page
+2. Add [pw_map address="your address here"] to any post or page
 
 == Changelog ==
 
