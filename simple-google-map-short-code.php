@@ -3,7 +3,7 @@
 Plugin Name: Simple Google Maps Short Code
 Plugin URL: http://pippinsplugins.com/simple-google-maps-short-code
 Description: Adds a simple Google Maps short code
-Version: 1.0
+Version: 1.0.1
 Author: Pippin Williamson
 Author URI: http://pippinsplugins.com
 Contributors: mordauk
@@ -43,7 +43,6 @@ function pw_map_shortcode( $atts ) {
 		$map_id = uniqid( 'pw_map_' ); // generate a unique ID for this map
 
 		ob_start(); ?>
-
 		<div class="pw_map_canvas" id="<?php echo esc_attr( $map_id ); ?>" style="height: <?php echo esc_attr( $atts['height'] ); ?>; width: <?php echo esc_attr( $atts['width'] ); ?>"></div>
 	    <script type="text/javascript">
 			var map_<?php echo $map_id; ?>;
@@ -148,3 +147,22 @@ function pw_map_get_coordinates( $address, $force_refresh = false ) {
 
     return $data;
 }
+
+
+/**
+ * Fixes a problem with responsive themes
+ *
+ * @access      private
+ * @since       1.0.1 
+ * @return      void
+*/
+
+function pw_map_css() {
+	echo '<style type="text/css">/* =Responsive Map fix
+-------------------------------------------------------------- */
+.pw_map_canvas img {
+	max-width: none;
+}</style>';
+
+}
+add_action( 'wp_head', 'pw_map_css' );

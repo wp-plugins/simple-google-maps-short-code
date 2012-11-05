@@ -6,7 +6,7 @@ Donate link: http://pippinsplugins.com/support-the-site
 Tags: Google Maps, Google Map, Short Code, gmaps, Pippin Williamson, Pippin's Plugins 
 Requires at least: 3.2
 Tested up to: 3.5
-Stable Tag: 1.0
+Stable Tag: 1.0.1
 
 
 A simple short code for embedding Google Maps in any WordPress post or page.
@@ -27,7 +27,7 @@ Yes, simply supply a width and height parameter:
 
 `[pw_map address="New York City" width="400px" height="200px"]`
 
-You can also use percentages for sizes:
+You can also use percentages for heights:
 
 `[pw_map address="New York City" width="50%" height="200px"]`
 
@@ -44,15 +44,23 @@ The maps are cached for 3 months. Caches are automatically cleared (for individu
 == Installation ==
 
 1. Activate the plugin
-2. Add [pw_map address="your address here"] to any post or page
+2. Added [pw_map address="your address here"] to any post or page
 
 == Changelog ==
+
+= 1.0.1 = 
+
+* Added CSS to fix a problem with responsive themes
 
 = 1.0 =
 
 * First release!
 
 == Upgrade Notice ==
+
+= 1.0.1 = 
+
+* Added CSS to fix a problem with responsive themes
 
 = 1.0
 
