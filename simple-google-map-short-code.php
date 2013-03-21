@@ -3,7 +3,7 @@
 Plugin Name: Simple Google Maps Short Code
 Plugin URL: http://pippinsplugins.com/simple-google-maps-short-code
 Description: Adds a simple Google Maps short code
-Version: 1.0.1
+Version: 1.0.2
 Author: Pippin Williamson
 Author URI: http://pippinsplugins.com
 Contributors: mordauk
@@ -14,7 +14,7 @@ Contributors: mordauk
  * Displays the map
  *
  * @access      private
- * @since       1.0 
+ * @since       1.0
  * @return      void
 */
 
@@ -72,7 +72,7 @@ add_shortcode( 'pw_map', 'pw_map_shortcode' );
  * Loads Google Map API
  *
  * @access      private
- * @since       1.0 
+ * @since       1.0
  * @return      void
 */
 
@@ -89,51 +89,52 @@ add_action( 'wp_enqueue_scripts', 'pw_map_load_scripts' );
  * Coordinates are cached using transients and a hash of the address
  *
  * @access      private
- * @since       1.0 
+ * @since       1.0
  * @return      void
 */
 
 function pw_map_get_coordinates( $address, $force_refresh = false ) {
-	
+
     $address_hash = md5( $address );
 
     $coordinates = get_transient( $address_hash );
 
     if ($force_refresh || $coordinates === false) {
-    	
-    	$url 		= 'http://maps.google.com/maps/geo?q=' . urlencode($address) . '&output=xml';
+
+    	$args       = array( 'address' => urlencode( $address ), 'sensor' => 'false' );
+    	$url        = add_query_arg( $args, 'http://maps.googleapis.com/maps/api/geocode/json' );
      	$response 	= wp_remote_get( $url );
 
      	if( is_wp_error( $response ) )
      		return;
 
-     	$xml = wp_remote_retrieve_body( $response );
+     	$data = wp_remote_retrieve_body( $response );
 
-     	if( is_wp_error( $xml ) )
+     	if( is_wp_error( $data ) )
      		return;
 
 		if ( $response['response']['code'] == 200 ) {
 
-			$data = new SimpleXMLElement( $xml );
+			$data = json_decode( $data );
 
-			if ( $data->Response->Status->code == 200 ) {
+			if ( $data->status === 'OK' ) {
 
-			  	$coordinates = $data->Response->Placemark->Point->coordinates;
+			  	$coordinates = $data->results[0]->geometry->location;
 
-			  	//Placemark->Point->coordinates;
-			  	$coordinates 			= explode(',', $coordinates[0]);
-			  	$cache_value['lat'] 	= $coordinates[1];
-			  	$cache_value['lng'] 	= $coordinates[0];
-			  	$cache_value['address'] = (string) $data->Response->Placemark->address[0];
+			  	$cache_value['lat'] 	= $coordinates->lat;
+			  	$cache_value['lng'] 	= $coordinates->lng;
+			  	$cache_value['address'] = (string) $data->results[0]->formatted_address;
 
 			  	// cache coordinates for 3 months
 			  	set_transient($address_hash, $cache_value, 3600*24*30*3);
 			  	$data = $cache_value;
 
-			} elseif ($data->Response->Status->code == 602) {
-			  	return sprintf( __( 'Unable to parse entered address. API response code: %s', 'pw-maps' ), @$data->Response->Status->code );
+			} elseif ( $data->status === 'ZERO_RESULTS' ) {
+			  	return __( 'No location found for the entered address.', 'pw-maps' );
+			} elseif( $data->status === 'INVALID_REQUEST' ) {
+			   	return __( 'Invalid request. Did you enter an address?', 'pw-maps' );
 			} else {
-			   	return sprintf( __( 'XML parsing error. Please try again later. API response code: %s', 'pw-maps' ), @$data->Response->Status->code );
+				return __( 'Something went wrong while retrieving your map, please ensure you have entered the short code correctly.', 'pw-maps' );
 			}
 
 		} else {
@@ -153,7 +154,7 @@ function pw_map_get_coordinates( $address, $force_refresh = false ) {
  * Fixes a problem with responsive themes
  *
  * @access      private
- * @since       1.0.1 
+ * @since       1.0.1
  * @return      void
 */
 

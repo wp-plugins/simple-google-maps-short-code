@@ -3,10 +3,10 @@ Author URI: http://pippinsplugins.com
 Plugin URI: http://pippinsplugins.com/simple-google-maps-short-code
 Contributors: mordauk
 Donate link: http://pippinsplugins.com/support-the-site
-Tags: Google Maps, Google Map, Short Code, gmaps, Pippin Williamson, Pippin's Plugins 
+Tags: Google Maps, Google Map, Short Code, gmaps, Pippin Williamson, Pippin's Plugins
 Requires at least: 3.2
-Tested up to: 3.5
-Stable Tag: 1.0.1
+Tested up to: 3.6
+Stable Tag: 1.0.2
 
 
 A simple short code for embedding Google Maps in any WordPress post or page.
@@ -48,20 +48,15 @@ The maps are cached for 3 months. Caches are automatically cleared (for individu
 
 == Changelog ==
 
-= 1.0.1 = 
+= 1.0.2 =
+
+* Updated Google Maps API to fix broken maps after version 2 was deprecated on March 8, 2013
+* Improved error responses
+
+= 1.0.1 =
 
 * Added CSS to fix a problem with responsive themes
 
 = 1.0 =
 
 * First release!
-
-== Upgrade Notice ==
-
-= 1.0.1 = 
-
-* Added CSS to fix a problem with responsive themes
-
-= 1.0
-
-* First beta release!
