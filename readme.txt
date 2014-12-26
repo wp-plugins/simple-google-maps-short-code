@@ -5,8 +5,8 @@ Contributors: mordauk
 Donate link: http://pippinsplugins.com/support-the-site
 Tags: Google Maps, Google Map, Short Code, gmaps, Pippin Williamson, Pippin's Plugins
 Requires at least: 3.2
-Tested up to: 3.6
-Stable Tag: 1.0.2
+Tested up to: 4.1
+Stable Tag: 1.0.3
 
 
 A simple short code for embedding Google Maps in any WordPress post or page.
@@ -47,6 +47,10 @@ The maps are cached for 3 months. Caches are automatically cleared (for individu
 2. Added [pw_map address="your address here"] to any post or page
 
 == Changelog ==
+
+= 1.0.3 =
+
+* Fixed a conflict with the Live Composer plugin.
 
 = 1.0.2 =
 

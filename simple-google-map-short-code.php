@@ -3,7 +3,7 @@
 Plugin Name: Simple Google Maps Short Code
 Plugin URL: http://pippinsplugins.com/simple-google-maps-short-code
 Description: Adds a simple Google Maps short code
-Version: 1.0.2
+Version: 1.0.3
 Author: Pippin Williamson
 Author URI: http://pippinsplugins.com
 Contributors: mordauk
@@ -31,7 +31,7 @@ function pw_map_shortcode( $atts ) {
 
 	$address = $atts['address'];
 
-	if( $address ) :
+	if( $address )	if( $address && wp_script_is( 'google-maps-api', 'registered' ) ) :
 
 		wp_print_scripts( 'google-maps-api' );
 
@@ -62,8 +62,10 @@ function pw_map_shortcode( $atts ) {
 			pw_run_map_<?php echo $map_id ; ?>();
 		</script>
 		<?php
+		return ob_get_clean();
+	else :
+		return __( 'This Google Map cannot be loaded because the maps API does not appear to be loaded', 'pw-maps' );
 	endif;
-	return ob_get_clean();
 }
 add_shortcode( 'pw_map', 'pw_map_shortcode' );
 
