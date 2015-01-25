@@ -6,7 +6,7 @@ Donate link: http://pippinsplugins.com/support-the-site
 Tags: Google Maps, Google Map, Short Code, gmaps, Pippin Williamson, Pippin's Plugins
 Requires at least: 3.2
 Tested up to: 4.1
-Stable Tag: 1.0.3
+Stable Tag: 1.1
 
 
 A simple short code for embedding Google Maps in any WordPress post or page.
@@ -31,13 +31,25 @@ You can also use percentages for heights:
 
 `[pw_map address="New York City" width="50%" height="200px"]`
 
-2. How are the maps cached?
+2. Can I disable the scroll wheel?
+
+Yes, simple add `enablescrollwheel="false"` to the short code.
+
+`[pw_map address="New York City" enablescrollwheel="false"]`
+
+3. Can I disable the map controls?
+
+Yes, simple add `disablecontrols="true"` to the short code.
+
+`[pw_map address="New York City" disablecontrols="true"]`
+
+4. How are the maps cached?
 
 Maps are cached using the WordPress [Transients API](http://codex.wordpress.org/Transients_API), which allows for very simple database-based caching.
 
 Each time you display a map, the address specified is used to generate a unique md5 hash, which is used for the cache identifier. This means that if you change the address used for your map, the cache will be refreshed.
 
-3. How often do caches refresh?
+5. How often do caches refresh?
 
 The maps are cached for 3 months. Caches are automatically cleared (for individual maps) when you change the address in the short code.
 
@@ -47,6 +59,11 @@ The maps are cached for 3 months. Caches are automatically cleared (for individu
 2. Added [pw_map address="your address here"] to any post or page
 
 == Changelog ==
+
+= 1.1 =
+
+* Added support for disabling map controls via disablecontrols="true", thanks to Alex Hochberger
+* Added support for disabling the scroll wheel zoom via enablescrollwheel="false", thanks to Alex Hochberger
 
 = 1.0.3 =
 
