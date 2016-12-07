@@ -53,6 +53,19 @@ Each time you display a map, the address specified is used to generate a unique 
 
 The maps are cached for 3 months. Caches are automatically cleared (for individual maps) when you change the address in the short code.
 
+6. Can I change the zoom level?
+
+Yes, simple add `zoom="12"` to the short code.
+
+`[pw_map address="New York City" zoom="12"]`
+
+7. Can I change the map type ?
+
+Yes, simple add `zoom="12"` to the short code.
+
+`[pw_map address="New York City" type="SATELLITE"]`
+
+
 == Installation ==
 
 1. Activate the plugin
