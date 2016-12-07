@@ -3,12 +3,29 @@
 Plugin Name: Simple Google Maps Short Code
 Plugin URL: http://pippinsplugins.com/simple-google-maps-short-code
 Description: Adds a simple Google Maps short code
-Version: 1.1.2
+Version: 1.3.1
 Author: Pippin Williamson
 Author URI: http://pippinsplugins.com
 Contributors: mordauk
 */
 
+/**
+ * Loads the plugin textdomain
+ *
+ * @access      private
+ * @since       1.2
+ * @return      void
+*/
+function pw_map_textdomain() {
+
+	// Set filter for plugin's languages directory
+	$lang_dir = dirname( plugin_basename( __FILE__ ) ) . '/languages/';
+	$lang_dir = apply_filters( 'pw_map_languages_directory', $lang_dir );
+
+	// Load the translations
+	load_plugin_textdomain( 'simple-google-maps-short-code', false, $lang_dir );
+}
+add_action( 'init', 'pw_map_textdomain' );
 
 /**
  * Displays the map
@@ -17,7 +34,6 @@ Contributors: mordauk
  * @since       1.0
  * @return      void
 */
-
 function pw_map_shortcode( $atts ) {
 
 	$atts = shortcode_atts(
@@ -27,14 +43,18 @@ function pw_map_shortcode( $atts ) {
 			'height'            => '400px',
 			'enablescrollwheel' => 'true',
 			'zoom'              => 15,
-			'disablecontrols'   => 'false'
+			'disablecontrols'   => 'false',
+			'type'              => 'ROADMAP', // or SATELLITE
+			'key'               => ''
 		),
 		$atts
 	);
 
 	$address = $atts['address'];
 
-	if( $address )	if( $address && wp_script_is( 'google-maps-api', 'registered' ) ) :
+	wp_enqueue_script( 'google-maps-api', '//maps.google.com/maps/api/js?sensor=false&callback=initMap&key=' . sanitize_text_field( $atts['key'] ) );
+
+	if( $address  ) :
 
 		wp_print_scripts( 'google-maps-api' );
 
@@ -47,7 +67,7 @@ function pw_map_shortcode( $atts ) {
 
 		ob_start(); ?>
 		<div class="pw_map_canvas" id="<?php echo esc_attr( $map_id ); ?>" style="height: <?php echo esc_attr( $atts['height'] ); ?>; width: <?php echo esc_attr( $atts['width'] ); ?>"></div>
-	    <script type="text/javascript">
+		<script type="text/javascript">
 			var map_<?php echo $map_id; ?>;
 			function pw_run_map_<?php echo $map_id ; ?>(){
 				var location = new google.maps.LatLng("<?php echo $coordinates['lat']; ?>", "<?php echo $coordinates['lng']; ?>");
@@ -56,7 +76,7 @@ function pw_map_shortcode( $atts ) {
 					center: location,
 					scrollwheel: <?php echo 'true' === strtolower( $atts['enablescrollwheel'] ) ? '1' : '0'; ?>,
 					disableDefaultUI: <?php echo 'true' === strtolower( $atts['disablecontrols'] ) ? '1' : '0'; ?>,
-					mapTypeId: google.maps.MapTypeId.ROADMAP
+					mapTypeId: google.maps.MapTypeId.<?php echo $atts['type']; ?>
 				}
 				map_<?php echo $map_id ; ?> = new google.maps.Map(document.getElementById("<?php echo $map_id ; ?>"), map_options);
 				var marker = new google.maps.Marker({
@@ -69,26 +89,10 @@ function pw_map_shortcode( $atts ) {
 		<?php
 		return ob_get_clean();
 	else :
-		return __( 'This Google Map cannot be loaded because the maps API does not appear to be loaded', 'pw-maps' );
+		return __( 'This Google Map cannot be loaded because the maps API does not appear to be loaded', 'simple-google-maps-short-code' );
 	endif;
 }
 add_shortcode( 'pw_map', 'pw_map_shortcode' );
-
-
-/**
- * Loads Google Map API
- *
- * @access      private
- * @since       1.0
- * @return      void
-*/
-
-function pw_map_load_scripts() {
-	wp_register_script( 'google-maps-api', '//maps.google.com/maps/api/js?sensor=false' );
-}
-add_action( 'wp_enqueue_scripts', 'pw_map_load_scripts' );
-
-
 
 /**
  * Retrieve coordinates for an address
@@ -99,26 +103,25 @@ add_action( 'wp_enqueue_scripts', 'pw_map_load_scripts' );
  * @since       1.0
  * @return      void
 */
-
 function pw_map_get_coordinates( $address, $force_refresh = false ) {
 
-    $address_hash = md5( $address );
+	$address_hash = md5( $address );
 
-    $coordinates = get_transient( $address_hash );
+	$coordinates = get_transient( $address_hash );
 
-    if ($force_refresh || $coordinates === false) {
+	if ( $force_refresh || $coordinates === false ) {
 
-    	$args       = array( 'address' => urlencode( $address ), 'sensor' => 'false' );
-    	$url        = add_query_arg( $args, 'http://maps.googleapis.com/maps/api/geocode/json' );
-     	$response 	= wp_remote_get( $url );
+		$args       = apply_filters( 'pw_map_query_args', array( 'address' => urlencode( $address ), 'sensor' => 'false' ) );
+		$url        = add_query_arg( $args, 'http://maps.googleapis.com/maps/api/geocode/json' );
+		$response 	= wp_remote_get( $url );
 
-     	if( is_wp_error( $response ) )
-     		return;
+		if( is_wp_error( $response ) )
+			return;
 
-     	$data = wp_remote_retrieve_body( $response );
+		$data = wp_remote_retrieve_body( $response );
 
-     	if( is_wp_error( $data ) )
-     		return;
+		if( is_wp_error( $data ) )
+			return;
 
 		if ( $response['response']['code'] == 200 ) {
 
@@ -126,34 +129,34 @@ function pw_map_get_coordinates( $address, $force_refresh = false ) {
 
 			if ( $data->status === 'OK' ) {
 
-			  	$coordinates = $data->results[0]->geometry->location;
+				$coordinates = $data->results[0]->geometry->location;
 
-			  	$cache_value['lat'] 	= $coordinates->lat;
-			  	$cache_value['lng'] 	= $coordinates->lng;
-			  	$cache_value['address'] = (string) $data->results[0]->formatted_address;
+				$cache_value['lat'] 	= $coordinates->lat;
+				$cache_value['lng'] 	= $coordinates->lng;
+				$cache_value['address'] = (string) $data->results[0]->formatted_address;
 
-			  	// cache coordinates for 3 months
-			  	set_transient($address_hash, $cache_value, 3600*24*30*3);
-			  	$data = $cache_value;
+				// cache coordinates for 3 months
+				set_transient($address_hash, $cache_value, 3600*24*30*3);
+				$data = $cache_value;
 
 			} elseif ( $data->status === 'ZERO_RESULTS' ) {
-			  	return __( 'No location found for the entered address.', 'pw-maps' );
+				return __( 'No location found for the entered address.', 'simple-google-maps-short-code' );
 			} elseif( $data->status === 'INVALID_REQUEST' ) {
-			   	return __( 'Invalid request. Did you enter an address?', 'pw-maps' );
+				return __( 'Invalid request. Did you enter an address?', 'simple-google-maps-short-code' );
 			} else {
-				return __( 'Something went wrong while retrieving your map, please ensure you have entered the short code correctly.', 'pw-maps' );
+				return __( 'Something went wrong while retrieving your map, please ensure you have entered the short code correctly.', 'simple-google-maps-short-code' );
 			}
 
 		} else {
-		 	return __( 'Unable to contact Google API service.', 'pw-maps' );
+			return __( 'Unable to contact Google API service.', 'simple-google-maps-short-code' );
 		}
 
-    } else {
-       // return cached results
-       $data = $coordinates;
-    }
+	} else {
+	   // return cached results
+	   $data = $coordinates;
+	}
 
-    return $data;
+	return $data;
 }
 
 
